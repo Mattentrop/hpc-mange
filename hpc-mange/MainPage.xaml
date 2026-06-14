@@ -1,0 +1,39 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="hpc_mange.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+
+            <Label Text="Gestão de Infraestrutura HPC" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" 
+                   Margin="0,0,0,20"/>
+
+            <Entry x:Name="EntryNome" 
+                   Placeholder="Nome do Cluster (ex: Ada-Lovelace)" />
+
+            <Entry x:Name="EntryLocalizacao" 
+                   Placeholder="Localização (ex: Sala Cofre C)" />
+
+            <Entry x:Name="EntryCapacidade" 
+                   Placeholder="Capacidade de Rede (ex: 100 Gbps)" />
+
+            <Button x:Name="BtnSalvar" 
+                    Text="Salvar Novo Cluster" 
+                    Clicked="OnSalvarClicked" 
+                    BackgroundColor="#512BD4" 
+                    TextColor="White" 
+                    Margin="0,20,0,0"/>
+
+            <Button x:Name="BtnListar" 
+                    Text="Listar Clusters Cadastrados" 
+                    Clicked="OnListarClicked" 
+                    BackgroundColor="#2B51D4" 
+                    TextColor="White" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
