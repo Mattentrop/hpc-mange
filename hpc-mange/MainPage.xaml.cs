@@ -1,7 +1,8 @@
 ﻿using hpc_mange.Controllers; // <- Mudamos isso!
 using hpc_mange.Models;
-using System.Linq;
+using hpc_mange.Services;
 using System;
+using System.Linq;
 
 namespace hpc_mange
 {
@@ -31,11 +32,15 @@ namespace hpc_mange
                     CapacidadeRede = EntryCapacidade.Text
                 };
 
-                // Agora chamamos o CONTROLLER, respeitando o MVC!
+                // 1. Salva no MySQL via MVC (Regra de Negócio principal)
                 ClusterController controller = new ClusterController();
                 controller.Cadastrar(novoCluster);
 
-                await DisplayAlert("Sucesso", "Cluster cadastrado com sucesso via MVC!", "OK");
+                // 2. Grava o log de auditoria no MongoDB (Registro de atividade)
+                AuditService auditoria = new AuditService();
+                auditoria.RegistrarLog("NOVO_CADASTRO", $"Cluster '{novoCluster.Nome}' adicionado na {novoCluster.Localizacao}.");
+
+                await DisplayAlert("Sucesso", "Cluster salvo no MySQL e log gravado no MongoDB!", "OK");
 
                 EntryNome.Text = "";
                 EntryLocalizacao.Text = "";
@@ -43,6 +48,10 @@ namespace hpc_mange
             }
             catch (Exception ex)
             {
+                // Se der erro no banco, gravamos o erro no MongoDB!
+                AuditService auditoriaErro = new AuditService();
+                auditoriaErro.RegistrarLog("ERRO_CADASTRO", $"Falha ao tentar cadastrar: {ex.Message}");
+
                 await DisplayAlert("Erro", $"Falha ao salvar:\n{ex.Message}", "OK");
             }
         }
