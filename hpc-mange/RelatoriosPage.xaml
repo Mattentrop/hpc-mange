@@ -1,0 +1,64 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="hpc_mange.RelatoriosPage"
+             Title="Painel de Dados"
+             BackgroundColor="{StaticResource Superficie}">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout VerticalOptions="Center" Spacing="10">
+            <ContentView HeightRequest="30" WidthRequest="30" VerticalOptions="Center">
+                <Image Source="logo_hpc.png" Aspect="AspectFit" />
+            </ContentView>
+            <Label Text="HPC Central" TextColor="{StaticResource Acento}" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+
+            <Label Text="Importação e Exportação" 
+                   FontSize="26" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" 
+                   TextColor="White"
+                   Margin="0,0,0,10"/>
+
+            <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="20">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Carga em Massa (MySQL)" TextColor="{StaticResource Acento}" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="Selecione um ficheiro .json para registar múltiplos clusters em simultâneo." TextColor="White" FontSize="13"/>
+                    <Button x:Name="BtnImportarJson" 
+                            Text="Importar Clusters (JSON)" 
+                            Clicked="OnImportarJsonClicked" 
+                            BackgroundColor="{StaticResource Primaria}" 
+                            TextColor="White" 
+                            HeightRequest="45"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="20">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Auditoria de Logs (MongoDB)" TextColor="#E63946" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="Extraia os logs históricos de auditoria diretamente para um ficheiro estruturado .xml." TextColor="White" FontSize="13"/>
+                    <Button x:Name="BtnExportarXml" 
+                            Text="Exportar Logs (XML)" 
+                            Clicked="OnExportarXmlClicked" 
+                            BackgroundColor="{StaticResource Neutro}" 
+                            TextColor="White" 
+                            HeightRequest="45"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button x:Name="BtnExportarPdf" 
+                Text="Exportar Relatório PDF" 
+                Clicked="OnExportarPdfClicked" 
+                BackgroundColor="{StaticResource Primaria}" 
+                TextColor="White" 
+                HeightRequest="45"
+                Margin="0,10,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

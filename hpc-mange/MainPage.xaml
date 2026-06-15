@@ -1,39 +1,34 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="hpc_mange.MainPage">
+             x:Class="hpc_mange.MainPage"
+             Title="Dashboard"
+             BackgroundColor="{StaticResource Superficie}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="20">
+    <Shell.TitleView>
+        <HorizontalStackLayout VerticalOptions="Center" Spacing="10">
+            <Image Source="logo_hpc.png" Aspect="AspectFit" HeightRequest="30" WidthRequest="30" VerticalOptions="Center"/>
+            <Label Text="HPC Manager" TextColor="{StaticResource Acento}" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
 
-            <Label Text="Gestão de Infraestrutura HPC" 
-                   FontSize="24" 
-                   FontAttributes="Bold" 
-                   HorizontalOptions="Center" 
-                   Margin="0,0,0,20"/>
+    <Grid RowDefinitions="Auto, Auto, *" Padding="20">
 
-            <Entry x:Name="EntryNome" 
-                   Placeholder="Nome do Cluster (ex: Ada-Lovelace)" />
+        <SearchBar x:Name="BarraPesquisa" Grid.Row="0" Placeholder="Pesquisar por nome..." SearchButtonPressed="OnPesquisarClicked" TextColor="White" PlaceholderColor="{StaticResource Neutro}" Margin="0,0,0,15"/>
 
-            <Entry x:Name="EntryLocalizacao" 
-                   Placeholder="Localização (ex: Sala Cofre C)" />
+        <Button Grid.Row="1" Text="+ Adicionar Novo Cluster" Clicked="OnAdicionarClicked" BackgroundColor="{StaticResource Primaria}" TextColor="White" FontAttributes="Bold" Margin="0,0,0,20"/>
 
-            <Entry x:Name="EntryCapacidade" 
-                   Placeholder="Capacidade de Rede (ex: 100 Gbps)" />
-
-            <Button x:Name="BtnSalvar" 
-                    Text="Salvar Novo Cluster" 
-                    Clicked="OnSalvarClicked" 
-                    BackgroundColor="#512BD4" 
-                    TextColor="White" 
-                    Margin="0,20,0,0"/>
-
-            <Button x:Name="BtnListar" 
-                    Text="Listar Clusters Cadastrados" 
-                    Clicked="OnListarClicked" 
-                    BackgroundColor="#2B51D4" 
-                    TextColor="White" />
-
-        </VerticalStackLayout>
-    </ScrollView>
-
+        <CollectionView x:Name="ListaClusters" Grid.Row="2" SelectionMode="Single" SelectionChanged="OnClusterSelecionado">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="{StaticResource Superficie}" BorderColor="{StaticResource Neutro}" CornerRadius="8" Margin="0,5">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Nome}" TextColor="{StaticResource Acento}" FontAttributes="Bold" FontSize="18"/>
+                            <Label Text="{Binding Localizacao}" TextColor="{StaticResource Neutro}" FontSize="14"/>
+                            <Label Text="{Binding CapacidadeRede}" TextColor="White" FontSize="14"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>

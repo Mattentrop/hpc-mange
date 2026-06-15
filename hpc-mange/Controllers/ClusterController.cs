@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using hpc_mange.Models;
 using hpc_mange.Services;
 
@@ -14,19 +13,29 @@ namespace hpc_mange.Controllers
             _service = new ClusterService();
         }
 
-        public void Cadastrar(Cluster obj)
+        public void Salvar(Cluster obj)
         {
-            // O Controller apenas repassa o objeto para o Service trabalhar
             _service.Salvar(obj);
         }
 
         public List<Cluster> CarregarDados()
         {
-            return _service.Listar();
+            return _service.CarregarDados();
         }
 
-        // Os outros métodos ficam vazios por enquanto
-        public void Atualizar(Cluster obj) { throw new NotImplementedException(); }
-        public void Deletar(int id) { throw new NotImplementedException(); }
+        public void Atualizar(Cluster obj)
+        {
+            _service.Atualizar(obj);
+        }
+
+        public void Excluir(int id)
+        {
+            _service.Excluir(id);
+        }
+
+        public List<Cluster> BuscarPorNome(string termo)
+        {
+            return _service.BuscarPorNome(termo);
+        }
     }
 }

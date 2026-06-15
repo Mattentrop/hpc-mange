@@ -7,7 +7,8 @@ namespace hpc_mange.DAO
         void Inserir(T obj);
         void Atualizar(T obj);
         void Excluir(int id);
-        T BuscarPorId(int id);
         List<T> BuscarTodos();
+        List<T> BuscarPorNome(string termo);
+        T BuscarPorId(int id);
     }
 }

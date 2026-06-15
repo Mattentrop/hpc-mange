@@ -16,22 +16,43 @@ namespace hpc_mange.Services
 
         public void Salvar(Cluster obj)
         {
-            // O Service faz a ponte e pode aplicar regras (ex: validar se o nome não é só espaço)
-            if (string.IsNullOrWhiteSpace(obj.Nome))
-            {
-                throw new Exception("O nome do cluster não pode estar vazio.");
-            }
+            // Validações e Regras de Negócio
+            if (string.IsNullOrWhiteSpace(obj.Nome) || string.IsNullOrWhiteSpace(obj.CapacidadeRede) || string.IsNullOrWhiteSpace(obj.Localizacao))
+                throw new Exception("Todos os campos devem estar preenchidos.");
+
+            if (obj.Nome.Contains(" "))
+                throw new Exception("Regra de Negócio: O nome do cluster deve seguir o padrão de hostname (sem espaços em branco).");
+
+            if (obj.Localizacao.Contains("Sala Cofre") && !obj.CapacidadeRede.Contains("Gbps"))
+                throw new Exception("Regra de Negócio: Ambientes de 'Sala Cofre' não suportam conexões abaixo de Gbps.");
+
+            if (obj.CapacidadeRede.Contains("400 Gbps") && obj.CapacidadeRede.Contains("Ethernet"))
+                throw new Exception("Regra de Negócio: Para 400 Gbps ou superiores, é obrigatória a utilização de arquitetura Infiniband.");
 
             _dao.Inserir(obj);
         }
 
-        public List<Cluster> Listar()
+        public List<Cluster> CarregarDados()
         {
             return _dao.BuscarTodos();
         }
 
-        // Os outros métodos ficam vazios por enquanto
-        public void Remover(int id) { throw new NotImplementedException(); }
-        public Cluster Obter(int id) { throw new NotImplementedException(); }
+        public void Atualizar(Cluster obj)
+        {
+            if (string.IsNullOrWhiteSpace(obj.Nome) || string.IsNullOrWhiteSpace(obj.CapacidadeRede) || string.IsNullOrWhiteSpace(obj.Localizacao))
+                throw new Exception("Todos os campos devem estar preenchidos para atualizar.");
+
+            _dao.Atualizar(obj);
+        }
+
+        public void Excluir(int id)
+        {
+            _dao.Excluir(id);
+        }
+
+        public List<Cluster> BuscarPorNome(string termo)
+        {
+            return _dao.BuscarPorNome(termo);
+        }
     }
 }

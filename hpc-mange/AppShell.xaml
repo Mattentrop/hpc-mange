@@ -1,15 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<Shell
-    x:Class="hpc_mange.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:hpc_mange"
-    Shell.FlyoutBehavior="Disabled"
-    Title="hpc_mange">
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:hpc_mange"
+       x:Class="hpc_mange.AppShell"
+       FlyoutBehavior="Flyout"
+       Shell.BackgroundColor="{StaticResource Superficie}"
+       Shell.TitleColor="White"
+       Shell.ForegroundColor="{StaticResource Acento}">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="{StaticResource Primaria}" HeightRequest="150" Padding="20">
+            <Label Text="HPC Manager" TextColor="White" FontSize="24" FontAttributes="Bold" VerticalOptions="End"/>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Gestão de Clusters">
+        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Relatórios e Exportações">
+        <ShellContent ContentTemplate="{DataTemplate local:RelatoriosPage}" />
+    </FlyoutItem>
+
+    <MenuItem Text="Sair do Sistema" Clicked="OnLogoutClicked" />
 
 </Shell>

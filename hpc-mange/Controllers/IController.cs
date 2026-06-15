@@ -4,9 +4,10 @@ namespace hpc_mange.Controllers
 {
     public interface IController<T>
     {
-        void Cadastrar(T obj);
+        void Salvar(T obj);
         void Atualizar(T obj);
-        void Deletar(int id);
+        void Excluir(int id);
         List<T> CarregarDados();
+        List<T> BuscarPorNome(string termo);
     }
 }

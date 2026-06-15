@@ -1,6 +1,5 @@
-﻿using hpc_mange.Controllers; // <- Mudamos isso!
+﻿using hpc_mange.Controllers;
 using hpc_mange.Models;
-using hpc_mange.Services;
 using System;
 using System.Linq;
 
@@ -8,75 +7,52 @@ namespace hpc_mange
 {
     public partial class MainPage : ContentPage
     {
+        private ClusterController _controller;
+
         public MainPage()
         {
             InitializeComponent();
+            _controller = new ClusterController();
         }
 
-        private async void OnSalvarClicked(object sender, EventArgs e)
+        // O SEGREDO ESTÁ AQUI: Isso garante que a lista atualize sempre que você voltar das outras telas
+        protected override void OnAppearing()
         {
-            if (string.IsNullOrWhiteSpace(EntryNome.Text) ||
-                string.IsNullOrWhiteSpace(EntryLocalizacao.Text) ||
-                string.IsNullOrWhiteSpace(EntryCapacidade.Text))
-            {
-                await DisplayAlert("Aviso", "Preencha todos os campos antes de salvar!", "OK");
-                return;
-            }
-
-            try
-            {
-                Cluster novoCluster = new Cluster
-                {
-                    Nome = EntryNome.Text,
-                    Localizacao = EntryLocalizacao.Text,
-                    CapacidadeRede = EntryCapacidade.Text
-                };
-
-                // 1. Salva no MySQL via MVC (Regra de Negócio principal)
-                ClusterController controller = new ClusterController();
-                controller.Cadastrar(novoCluster);
-
-                // 2. Grava o log de auditoria no MongoDB (Registro de atividade)
-                AuditService auditoria = new AuditService();
-                auditoria.RegistrarLog("NOVO_CADASTRO", $"Cluster '{novoCluster.Nome}' adicionado na {novoCluster.Localizacao}.");
-
-                await DisplayAlert("Sucesso", "Cluster salvo no MySQL e log gravado no MongoDB!", "OK");
-
-                EntryNome.Text = "";
-                EntryLocalizacao.Text = "";
-                EntryCapacidade.Text = "";
-            }
-            catch (Exception ex)
-            {
-                // Se der erro no banco, gravamos o erro no MongoDB!
-                AuditService auditoriaErro = new AuditService();
-                auditoriaErro.RegistrarLog("ERRO_CADASTRO", $"Falha ao tentar cadastrar: {ex.Message}");
-
-                await DisplayAlert("Erro", $"Falha ao salvar:\n{ex.Message}", "OK");
-            }
+            base.OnAppearing();
+            CarregarLista();
         }
 
-        private async void OnListarClicked(object sender, EventArgs e)
+        private void CarregarLista()
         {
-            try
-            {
-                // Aqui também chamamos o CONTROLLER!
-                ClusterController controller = new ClusterController();
-                var clusters = controller.CarregarDados();
+            ListaClusters.ItemsSource = _controller.CarregarDados();
+        }
 
-                if (clusters.Count > 0)
-                {
-                    string nomes = string.Join("\n- ", clusters.Select(c => c.Nome));
-                    await DisplayAlert($"Total: {clusters.Count} Clusters", $"\n- {nomes}", "OK");
-                }
-                else
-                {
-                    await DisplayAlert("Aviso", "Nenhum cluster encontrado no banco.", "OK");
-                }
-            }
-            catch (Exception ex)
+        private void OnPesquisarClicked(object sender, EventArgs e)
+        {
+            string termo = BarraPesquisa.Text;
+            if (string.IsNullOrWhiteSpace(termo))
+                CarregarLista();
+            else
+                ListaClusters.ItemsSource = _controller.BuscarPorNome(termo);
+        }
+
+        private async void OnAdicionarClicked(object sender, EventArgs e)
+        {
+            // Abre a tela de adicionar por cima
+            await Navigation.PushAsync(new AddClusterPage());
+        }
+
+        private async void OnClusterSelecionado(object sender, SelectionChangedEventArgs e)
+        {
+            var clusterClicado = e.CurrentSelection.FirstOrDefault() as Cluster;
+
+            if (clusterClicado != null)
             {
-                await DisplayAlert("Erro", $"Falha ao buscar:\n{ex.Message}", "OK");
+                // Tira a seleção visual do item para poder clicar nele de novo depois
+                ListaClusters.SelectedItem = null;
+
+                // Passa o cluster clicado para a tela de edição
+                await Navigation.PushAsync(new EditClusterPage(clusterClicado));
             }
         }
     }

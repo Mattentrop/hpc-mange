@@ -5,8 +5,9 @@ namespace hpc_mange.Services
     public interface IService<T>
     {
         void Salvar(T obj);
-        void Remover(int id);
-        T Obter(int id);
-        List<T> Listar();
+        void Atualizar(T obj);
+        void Excluir(int id);
+        List<T> CarregarDados();
+        List<T> BuscarPorNome(string termo);
     }
 }
