@@ -1,6 +1,8 @@
 using hpc_mange.Controllers;
 using hpc_mange.Models;
+using hpc_mange.DAO;
 using System;
+using System.Linq;
 
 namespace hpc_mange
 {
@@ -8,18 +10,84 @@ namespace hpc_mange
     {
         private ClusterController _controller;
         private Cluster _clusterAtual;
+        private NodoDAO _nodoDAO;
+        private PesquisadorDAO _pesquisadorDAO;
+        private int _clusterIdAtual;
 
-        // O construtor agora exige que um cluster seja passado para ele
         public EditClusterPage(Cluster clusterSelecionado)
         {
             InitializeComponent();
             _controller = new ClusterController();
+            _nodoDAO = new NodoDAO();
+            _pesquisadorDAO = new PesquisadorDAO();
             _clusterAtual = clusterSelecionado;
+            _clusterIdAtual = clusterSelecionado.Id;
 
-            // Preenche os campos com os dados atuais
             EntryNome.Text = _clusterAtual.Nome;
             EntryLocalizacao.Text = _clusterAtual.Localizacao;
             EntryCapacidade.Text = _clusterAtual.CapacidadeRede;
+
+            CarregarDropdownPesquisadores();
+            CarregarNodos();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            CarregarNodos();
+        }
+
+        private void CarregarDropdownPesquisadores()
+        {
+            var pesquisadores = _pesquisadorDAO.BuscarTodos();
+            PickerPesquisador.ItemsSource = pesquisadores;
+
+            if (_clusterAtual.PesquisadorId.HasValue)
+            {
+                PickerPesquisador.SelectedItem = pesquisadores.FirstOrDefault(p => p.Id == _clusterAtual.PesquisadorId.Value);
+            }
+        }
+
+        private void CarregarNodos()
+        {
+            try
+            {
+                var nodos = _nodoDAO.BuscarPorCluster(_clusterIdAtual);
+                ListaNodos.ItemsSource = nodos;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Erro", ex.Message, "OK");
+            }
+        }
+
+        private async void OnAdicionarNodoClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new AddNodoPage(_clusterIdAtual));
+        }
+
+        private async void OnDeletarNodoClicked(object sender, EventArgs e)
+        {
+            var button = sender as Button;
+            var nodo = button?.CommandParameter as Nodo;
+
+            if (nodo != null)
+            {
+                bool confirma = await DisplayAlert("Atenção", $"Deseja remover o nodo '{nodo.Hostname}'?", "Sim", "Não");
+                if (confirma)
+                {
+                    try
+                    {
+                        _nodoDAO.Excluir(nodo.Id);
+                        hpc_mange.Services.AuditService.RegistrarLog("Exclusão", $"Nodo {nodo.Hostname} removido do cluster.", "Sistema");
+                        CarregarNodos();
+                    }
+                    catch (Exception ex)
+                    {
+                        await DisplayAlert("Erro", ex.Message, "OK");
+                    }
+                }
+            }
         }
 
         private async void OnAtualizarClicked(object sender, EventArgs e)
@@ -30,9 +98,11 @@ namespace hpc_mange
                 _clusterAtual.Localizacao = EntryLocalizacao.Text;
                 _clusterAtual.CapacidadeRede = EntryCapacidade.Text;
 
+                var pesquisadorSelecionado = PickerPesquisador.SelectedItem as Pesquisador;
+                _clusterAtual.PesquisadorId = pesquisadorSelecionado?.Id;
+
                 _controller.Atualizar(_clusterAtual);
-                await DisplayAlert("Sucesso", "Cluster atualizado!", "OK");
-                await Navigation.PopAsync(); // Volta para a lista
+                await Navigation.PopAsync();
             }
             catch (Exception ex)
             {
@@ -48,11 +118,11 @@ namespace hpc_mange
                 try
                 {
                     _controller.Excluir(_clusterAtual.Id);
-                    await Navigation.PopAsync(); // Volta para a lista
+                    await Navigation.PopAsync();
                 }
                 catch (Exception ex)
                 {
-                    await DisplayAlert("Erro", $"Falha ao excluir: {ex.Message}", "OK");
+                    await DisplayAlert("Erro", ex.Message, "OK");
                 }
             }
         }

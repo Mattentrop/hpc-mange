@@ -1,6 +1,7 @@
 using hpc_mange.Controllers;
 using hpc_mange.Models;
 using hpc_mange.Relatorios;
+using hpc_mange.DAO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,7 +69,6 @@ namespace hpc_mange
             }
         }
 
-        // --- NOVO MÉTODO: EXPORTAR JSON ---
         private async void OnExportarJsonClicked(object sender, EventArgs e)
         {
             try
@@ -81,18 +81,30 @@ namespace hpc_mange
                     return;
                 }
 
+                var nodoDAO = new NodoDAO();
+                var backupCompleto = new List<object>();
+
+                foreach (var cluster in listaClusters)
+                {
+                    var nodos = nodoDAO.BuscarPorCluster(cluster.Id);
+                    backupCompleto.Add(new
+                    {
+                        ClusterInfo = cluster,
+                        NodosInstalados = nodos
+                    });
+                }
+
                 var opcoes = new JsonSerializerOptions { WriteIndented = true };
-                string jsonString = JsonSerializer.Serialize(listaClusters, opcoes);
+                string jsonString = JsonSerializer.Serialize(backupCompleto, opcoes);
 
                 string arquivoDestino = Path.Combine(FileSystem.CacheDirectory, "hpc_backup.json");
                 File.WriteAllText(arquivoDestino, jsonString);
 
-                // Auditoria
                 var sqlite = new hpc_mange.Services.SQLiteService();
                 string emailLogado = sqlite.LerConfiguracao("UsuarioLogado");
                 string usuarioLog = (!string.IsNullOrWhiteSpace(emailLogado) && emailLogado != "Nenhuma configuração encontrada") ? emailLogado : "Sistema";
 
-                hpc_mange.Services.AuditService.RegistrarLog("Exportação JSON", "Backup dos clusters gerado pelo utilizador.", usuarioLog);
+                hpc_mange.Services.AuditService.RegistrarLog("Exportação JSON", "Backup hierárquico com Nodos e Clusters gerado.", usuarioLog);
 
                 await Launcher.OpenAsync(new OpenFileRequest
                 {
@@ -170,7 +182,6 @@ namespace hpc_mange
         }
     }
 
-    // CLASSE DE LOG CORRIGIDA PARA LER E GRAVAR OS IDS CORRETAMENTE NO MONGO
     public class LogAuditoria
     {
         [BsonId]

@@ -1,0 +1,22 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="hpc_mange.AddPesquisadorPage"
+             Title="Novo Pesquisador e Acesso"
+             BackgroundColor="{StaticResource Superficie}">
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+            <Label Text="Dados do Pesquisador" TextColor="White" FontSize="20" FontAttributes="Bold"/>
+            <Entry x:Name="EntryNome" Placeholder="Nome Completo" TextColor="White" BackgroundColor="#111A42"/>
+            <Entry x:Name="EntryDepto" Placeholder="Departamento" TextColor="White" BackgroundColor="#111A42"/>
+            <Entry x:Name="EntryEmail" Placeholder="Email Institucional" Keyboard="Email" TextColor="White" BackgroundColor="#111A42"/>
+
+            <BoxView HeightRequest="1" Color="#4A5568" Margin="0,10"/>
+
+            <Label Text="Credenciais de Acesso (Sistema)" TextColor="#2A9D8F" FontSize="18" FontAttributes="Bold"/>
+            <Entry x:Name="EntryLogin" Placeholder="Login de Usuário" TextColor="White" BackgroundColor="#111A42"/>
+            <Entry x:Name="EntrySenha" Placeholder="Senha" IsPassword="True" TextColor="White" BackgroundColor="#111A42"/>
+
+            <Button Text="Salvar Registro Completo" Clicked="OnSalvarClicked" BackgroundColor="{StaticResource Acento}" TextColor="{StaticResource Superficie}" FontAttributes="Bold" HeightRequest="50" Margin="0,20,0,0"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

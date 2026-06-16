@@ -17,7 +17,6 @@ namespace hpc_mange
             _controller = new ClusterController();
         }
 
-        // O SEGREDO ESTÁ AQUI: Isso garante que a lista atualize sempre que você voltar das outras telas
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -27,8 +26,6 @@ namespace hpc_mange
 
         private void CarregarFiltroCapacidades()
         {
-            // Só recarrega as opções se ainda não tiverem sido carregadas,
-            // para não perder a seleção atual do usuário ao voltar de outra tela.
             if (FiltroCapacidade.ItemsSource != null)
                 return;
 
@@ -63,8 +60,12 @@ namespace hpc_mange
 
         private async void OnAdicionarClicked(object sender, EventArgs e)
         {
-            // Abre a tela de adicionar por cima
             await Navigation.PushAsync(new AddClusterPage());
+        }
+
+        private async void OnGestaoAuxiliarClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new GestaoAuxiliarPage());
         }
 
         private async void OnClusterSelecionado(object sender, SelectionChangedEventArgs e)
@@ -72,9 +73,7 @@ namespace hpc_mange
             var clusterClicado = e.CurrentSelection.FirstOrDefault() as Cluster;
             if (clusterClicado != null)
             {
-                // Tira a seleção visual do item para poder clicar nele de novo depois
                 ListaClusters.SelectedItem = null;
-                // Passa o cluster clicado para a tela de edição
                 await Navigation.PushAsync(new EditClusterPage(clusterClicado));
             }
         }

@@ -10,11 +10,17 @@
         </HorizontalStackLayout>
     </Shell.TitleView>
     <Grid RowDefinitions="Auto, Auto, *" Padding="20">
+
         <Grid Grid.Row="0" ColumnDefinitions="*, 150" ColumnSpacing="10" Margin="0,0,0,15">
             <SearchBar x:Name="BarraPesquisa" Grid.Column="0" Placeholder="Pesquisar por nome..." SearchButtonPressed="OnPesquisarClicked" TextColor="White" PlaceholderColor="{StaticResource Neutro}"/>
             <Picker x:Name="FiltroCapacidade" Grid.Column="1" Title="Capacidade" TextColor="White" TitleColor="{StaticResource Neutro}" SelectedIndexChanged="OnFiltroAlterado"/>
         </Grid>
-        <Button Grid.Row="1" Text="+ Adicionar Novo Cluster" Clicked="OnAdicionarClicked" BackgroundColor="{StaticResource Primaria}" TextColor="White" FontAttributes="Bold" Margin="0,0,0,20"/>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,0,0,20">
+            <Button Grid.Column="0" Text="+ Novo Cluster" Clicked="OnAdicionarClicked" BackgroundColor="{StaticResource Primaria}" TextColor="White" FontAttributes="Bold"/>
+            <Button Grid.Column="1" Text="Gerir Recursos" Clicked="OnGestaoAuxiliarClicked" BackgroundColor="#2A9D8F" TextColor="White" FontAttributes="Bold"/>
+        </Grid>
+
         <CollectionView x:Name="ListaClusters" Grid.Row="2" SelectionMode="Single" SelectionChanged="OnClusterSelecionado">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -28,5 +34,6 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
     </Grid>
 </ContentPage>
