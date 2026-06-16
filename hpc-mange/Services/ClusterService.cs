@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using hpc_mange.Models;
 using hpc_mange.DAO;
+using hpc_mange.Interfaces;
 namespace hpc_mange.Services
 {
     public class ClusterService : IService<Cluster>

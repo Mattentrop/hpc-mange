@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using hpc_mange.Models;
+using hpc_mange.Interfaces;
 
 namespace hpc_mange.DAO
 {

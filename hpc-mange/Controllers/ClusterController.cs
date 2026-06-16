@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using hpc_mange.Models;
 using hpc_mange.DAO;
+using hpc_mange.Interfaces;
 using hpc_mange.Services;
 namespace hpc_mange.Controllers
 {

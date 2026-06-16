@@ -56,15 +56,34 @@ namespace hpc_mange
                         int importados = 0;
                         foreach (var cluster in listaClusters)
                         {
+                            if (string.IsNullOrWhiteSpace(cluster.Nome))
+                            {
+                                continue;
+                            }
+
+
                             _clusterController.Salvar(cluster);
                             importados++;
                         }
+
+                        var sqlite = new hpc_mange.Services.SQLiteService();
+                        string emailLogado = sqlite.LerConfiguracao("UsuarioLogado");
+                        string usuarioLog = (!string.IsNullOrWhiteSpace(emailLogado) && emailLogado != "Nenhuma configuração encontrada") ? emailLogado : "Sistema";
+
+                        hpc_mange.Services.AuditService.RegistrarLog("Importação JSON", $"{importados} clusters importados com sucesso.", usuarioLog);
+
                         await DisplayAlert("Importação Concluída", $"{importados} clusters foram registados com sucesso!", "OK");
                     }
                 }
             }
             catch (Exception ex)
             {
+                var sqlite = new hpc_mange.Services.SQLiteService();
+                string emailLogado = sqlite.LerConfiguracao("UsuarioLogado");
+                string usuarioLog = (!string.IsNullOrWhiteSpace(emailLogado) && emailLogado != "Nenhuma configuração encontrada") ? emailLogado : "Sistema";
+
+                hpc_mange.Services.AuditService.RegistrarLog("Erro Importação JSON", $"Falha crítica ao importar arquivo: {ex.Message}", usuarioLog);
+
                 await DisplayAlert("Erro na Importação", ex.Message, "OK");
             }
         }
@@ -139,10 +158,11 @@ namespace hpc_mange
                     new XElement("Registos",
                         listaLogs.ConvertAll(log => new XElement("Log",
                             new XElement("Id", log.Id?.ToString() ?? "N/A"),
-                            new XElement("Operacao", log.Operacao ?? "Desconhecida"),
+                            new XElement("TipoEvento", log.Operacao ?? "Desconhecida"),
+                            new XElement("AcaoRealizada", log.Operacao ?? "Desconhecida"),
                             new XElement("DataHora", log.DataHora != DateTime.MinValue ? log.DataHora.ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")),
-                            new XElement("Detalhes", log.Detalhes ?? "Sem detalhes"),
-                            new XElement("UsuarioResponsavel", log.UsuarioResponsavel ?? "Sistema")
+                            new XElement("Descricao", log.Detalhes ?? "Sem detalhes"),
+                            new XElement("Usuario", log.UsuarioResponsavel ?? "Sistema")
                         ))
                     )
                 );

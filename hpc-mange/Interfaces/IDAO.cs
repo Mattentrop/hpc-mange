@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace hpc_mange.DAO
+namespace hpc_mange.Interfaces
 {
     public interface IDAO<T>
     {
