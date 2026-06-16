@@ -20,6 +20,9 @@
     <FlyoutItem Title="Relatórios e Exportações">
         <ShellContent ContentTemplate="{DataTemplate local:RelatoriosPage}" />
     </FlyoutItem>
+    <FlyoutItem Title="Métricas e Gráficos" Icon="grafico_icon.png">
+        <ShellContent ContentTemplate="{DataTemplate local:GraficosPage}" />
+    </FlyoutItem>
 
     <MenuItem Text="Sair do Sistema" Clicked="OnLogoutClicked" />
 

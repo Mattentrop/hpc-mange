@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microcharts.Maui;
 
 namespace hpc_mange
 {
@@ -9,6 +10,7 @@ namespace hpc_mange
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMicrocharts()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -16,7 +18,7 @@ namespace hpc_mange
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

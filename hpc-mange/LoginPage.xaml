@@ -1,28 +1,48 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="hpc_mange.LoginPage">
+             x:Class="hpc_mange.LoginPage"
+             BackgroundColor="{StaticResource Superficie}">
 
-    <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+    <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+
+        <Image Source="logo_hpc.png" 
+               HeightRequest="100" 
+               Aspect="AspectFit" 
+               Margin="0,0,0,10" />
 
         <Label Text="Acesso Restrito HPC" 
                FontSize="28" 
                FontAttributes="Bold" 
                HorizontalOptions="Center" 
-               Margin="0,0,0,30"/>
+               TextColor="White"
+               Margin="0,0,0,10"/>
 
-        <Entry x:Name="EntryLogin" 
-               Placeholder="E-mail (ex: admin@teste.com)" 
-               Keyboard="Email"/>
+        <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="25">
+            <VerticalStackLayout Spacing="15">
 
-        <Entry x:Name="EntrySenha" 
-               Placeholder="Senha" 
-               IsPassword="True"/>
+                <Label Text="Credenciais de Acesso" TextColor="{StaticResource Acento}" FontAttributes="Bold" FontSize="16"/>
 
-        <Button Text="Entrar no Sistema" 
-                Clicked="OnLoginClicked" 
-                BackgroundColor="#512BD4" 
-                TextColor="White" 
-                Margin="0,20,0,0"/>
+                <Entry x:Name="EntryLogin" 
+                       Placeholder="E-mail (ex: admin@univap.br)" 
+                       PlaceholderColor="Gray"
+                       TextColor="White"
+                       Keyboard="Email"/>
+
+                <Entry x:Name="EntrySenha" 
+                       Placeholder="Senha" 
+                       PlaceholderColor="Gray"
+                       TextColor="White"
+                       IsPassword="True"/>
+
+                <Button Text="Entrar no Sistema" 
+                        Clicked="OnLoginClicked" 
+                        BackgroundColor="{StaticResource Primaria}" 
+                        TextColor="White" 
+                        HeightRequest="45"
+                        Margin="0,15,0,0"/>
+
+            </VerticalStackLayout>
+        </Frame>
 
     </VerticalStackLayout>
 </ContentPage>

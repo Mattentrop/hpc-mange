@@ -1,44 +1,43 @@
 ﻿using MongoDB.Driver;
 using hpc_mange.Models;
 using System;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
 
 namespace hpc_mange.Services
 {
     public class AuditService
     {
-        private readonly IMongoCollection<AuditLog> _logsCollection;
-
-        public AuditService()
-        {
-            // Usamos o mesmo IP da rede virtual, mas apontando para a porta do Mongo
-            string connectionString = "mongodb://admin_mongo:senha_mongo@192.168.122.1:27017";
-
-            var client = new MongoClient(connectionString);
-
-            // Cria (ou acessa) o banco de dados 'hpc_logs'
-            var database = client.GetDatabase("hpc_logs");
-
-            // Cria (ou acessa) a coleção 'auditoria'
-            _logsCollection = database.GetCollection<AuditLog>("auditoria");
-        }
-
-        public void RegistrarLog(string acao, string detalhes)
+        public static void RegistrarLog(string operacao, string detalhes, string usuario)
         {
             try
             {
-                var log = new AuditLog
+                string connectionString = "mongodb://admin_mongo:senha_mongo@192.168.122.1:27017/?authSource=admin";
+                var client = new MongoClient(connectionString);
+
+                var database = client.GetDatabase("hpc_audit");
+                var collection = database.GetCollection<LogAuditoria>("logs");
+
+                var log = new LogAuditoria
                 {
-                    Acao = acao,
+                    Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
+                    Operacao = operacao,
                     Detalhes = detalhes,
-                    DataHora = DateTime.Now
+                    DataHora = DateTime.Now,
+                    UsuarioResponsavel = string.IsNullOrWhiteSpace(usuario) ? "Sistema" : usuario
                 };
 
-                _logsCollection.InsertOne(log);
+                collection.InsertOne(log);
             }
             catch (Exception ex)
             {
-                // Se o Mongo estiver fora do ar, imprimimos no console para não travar o app
-                Console.WriteLine("Erro ao gravar log de auditoria: " + ex.Message);
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Falha Oculta no MongoDB", ex.Message, "OK");
+                    }
+                });
             }
         }
     }

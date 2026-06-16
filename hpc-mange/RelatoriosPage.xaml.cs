@@ -9,6 +9,8 @@ using System.Xml.Linq;
 using Microsoft.Maui.Storage;
 using Microsoft.Maui.ApplicationModel;
 using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace hpc_mange
 {
@@ -22,7 +24,6 @@ namespace hpc_mange
             _clusterController = new ClusterController();
         }
 
-        // ---------------- 1. IMPORTAÇÃO JSON -> MYSQL ---------------- //
         private async void OnImportarJsonClicked(object sender, EventArgs e)
         {
             try
@@ -67,7 +68,44 @@ namespace hpc_mange
             }
         }
 
-        // ---------------- 2. EXPORTAÇÃO MONGODB -> XML ---------------- //
+        // --- NOVO MÉTODO: EXPORTAR JSON ---
+        private async void OnExportarJsonClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var listaClusters = _clusterController.CarregarDados();
+
+                if (listaClusters == null || listaClusters.Count == 0)
+                {
+                    await DisplayAlert("Aviso", "Não há clusters cadastrados para exportar.", "OK");
+                    return;
+                }
+
+                var opcoes = new JsonSerializerOptions { WriteIndented = true };
+                string jsonString = JsonSerializer.Serialize(listaClusters, opcoes);
+
+                string arquivoDestino = Path.Combine(FileSystem.CacheDirectory, "hpc_backup.json");
+                File.WriteAllText(arquivoDestino, jsonString);
+
+                // Auditoria
+                var sqlite = new hpc_mange.Services.SQLiteService();
+                string emailLogado = sqlite.LerConfiguracao("UsuarioLogado");
+                string usuarioLog = (!string.IsNullOrWhiteSpace(emailLogado) && emailLogado != "Nenhuma configuração encontrada") ? emailLogado : "Sistema";
+
+                hpc_mange.Services.AuditService.RegistrarLog("Exportação JSON", "Backup dos clusters gerado pelo utilizador.", usuarioLog);
+
+                await Launcher.OpenAsync(new OpenFileRequest
+                {
+                    Title = "Exportação JSON HPC",
+                    File = new ReadOnlyFile(arquivoDestino)
+                });
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro na Exportação", ex.Message, "OK");
+            }
+        }
+
         private async void OnExportarXmlClicked(object sender, EventArgs e)
         {
             try
@@ -88,10 +126,11 @@ namespace hpc_mange
                 XElement xmlEstrutura = new XElement("Auditoria",
                     new XElement("Registos",
                         listaLogs.ConvertAll(log => new XElement("Log",
-                            new XElement("Id", log.Id.ToString()),
-                            new XElement("Operacao", log.Operacao),
-                            new XElement("DataHora", log.DataHora.ToString("yyyy-MM-dd HH:mm:ss")),
-                            new XElement("Detalhes", log.Detalhes)
+                            new XElement("Id", log.Id?.ToString() ?? "N/A"),
+                            new XElement("Operacao", log.Operacao ?? "Desconhecida"),
+                            new XElement("DataHora", log.DataHora != DateTime.MinValue ? log.DataHora.ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")),
+                            new XElement("Detalhes", log.Detalhes ?? "Sem detalhes"),
+                            new XElement("UsuarioResponsavel", log.UsuarioResponsavel ?? "Sistema")
                         ))
                     )
                 );
@@ -99,7 +138,10 @@ namespace hpc_mange
                 string caminhoTemporario = Path.Combine(FileSystem.CacheDirectory, "audit_report.xml");
                 xmlEstrutura.Save(caminhoTemporario);
 
-                await Share.Default.RequestAsync(new ShareFileRequest { Title = "Exportar XML", File = new ShareFile(caminhoTemporario) });
+                await Launcher.Default.OpenAsync(new OpenFileRequest
+                {
+                    File = new ReadOnlyFile(caminhoTemporario)
+                });
             }
             catch (Exception ex)
             {
@@ -107,7 +149,6 @@ namespace hpc_mange
             }
         }
 
-        // ---------------- 3. EXPORTAÇÃO PDF ---------------- //
         private async void OnExportarPdfClicked(object sender, EventArgs e)
         {
             try
@@ -115,10 +156,8 @@ namespace hpc_mange
                 var clusters = _clusterController.CarregarDados();
                 string caminho = Path.Combine(FileSystem.CacheDirectory, "RelatorioHPC.pdf");
 
-                // Gera o PDF usando o serviço
                 PdfService.GerarRelatorio(clusters, caminho);
 
-                // Abre o PDF diretamente no leitor padrão (sem partilhar)
                 await Launcher.Default.OpenAsync(new OpenFileRequest
                 {
                     File = new ReadOnlyFile(caminho)
@@ -131,11 +170,16 @@ namespace hpc_mange
         }
     }
 
+    // CLASSE DE LOG CORRIGIDA PARA LER E GRAVAR OS IDS CORRETAMENTE NO MONGO
     public class LogAuditoria
     {
-        public object Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
         public string Operacao { get; set; }
         public DateTime DataHora { get; set; }
         public string Detalhes { get; set; }
+        public string UsuarioResponsavel { get; set; }
     }
 }

@@ -1,0 +1,44 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             x:Class="hpc_mange.GraficosPage"
+             Title="Análise Gráfica"
+             BackgroundColor="{StaticResource Superficie}">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout VerticalOptions="Center" Spacing="10">
+            <ContentView HeightRequest="30" WidthRequest="30" VerticalOptions="Center">
+                <Image Source="logo_hpc.png" Aspect="AspectFit" />
+            </ContentView>
+            <Label Text="HPC Central" TextColor="{StaticResource Acento}" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+
+            <Label Text="Métricas de Infraestrutura" 
+                   FontSize="26" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" 
+                   TextColor="White"
+                   Margin="0,0,0,10"/>
+
+            <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="20" HeightRequest="400">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Distribuição por Capacidade de Rede" TextColor="#00E5FF" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,0,0,10"/>
+                    <microcharts:ChartView x:Name="GraficoClusters" HeightRequest="300" BackgroundColor="Transparent"/>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button Text="Atualizar Gráfico" 
+                    Clicked="OnAtualizarGraficoClicked" 
+                    BackgroundColor="{StaticResource Primaria}" 
+                    TextColor="White" 
+                    HeightRequest="45"
+                    Margin="0,10,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

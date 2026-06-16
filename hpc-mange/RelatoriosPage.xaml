@@ -25,12 +25,26 @@
 
             <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="20">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Carga em Massa (MySQL)" TextColor="{StaticResource Acento}" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="Carga em Massa (JSON)" TextColor="{StaticResource Acento}" FontAttributes="Bold" FontSize="16"/>
                     <Label Text="Selecione um ficheiro .json para registar múltiplos clusters em simultâneo." TextColor="White" FontSize="13"/>
                     <Button x:Name="BtnImportarJson" 
                             Text="Importar Clusters (JSON)" 
                             Clicked="OnImportarJsonClicked" 
                             BackgroundColor="{StaticResource Primaria}" 
+                            TextColor="White" 
+                            HeightRequest="45"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="20">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Backup de Dados (JSON)" TextColor="#2A9D8F" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="Gere uma cópia completa da sua infraestrutura de clusters num ficheiro estruturado." TextColor="White" FontSize="13"/>
+                    <Button x:Name="BtnExportarJson" 
+                            Text="Exportar Banco (JSON)" 
+                            Clicked="OnExportarJsonClicked" 
+                            BackgroundColor="#2A9D8F" 
                             TextColor="White" 
                             HeightRequest="45"
                             Margin="0,10,0,0"/>
@@ -51,13 +65,19 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <Button x:Name="BtnExportarPdf" 
-                Text="Exportar Relatório PDF" 
-                Clicked="OnExportarPdfClicked" 
-                BackgroundColor="{StaticResource Primaria}" 
-                TextColor="White" 
-                HeightRequest="45"
-                Margin="0,10,0,0"/>
+            <Frame BackgroundColor="#111A42" BorderColor="{StaticResource Neutro}" CornerRadius="12" Padding="20">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Relatório Gerencial (PDF)" TextColor="{StaticResource Acento}" FontAttributes="Bold" FontSize="16"/>
+                    <Label Text="Gere um documento visual detalhado com o balanço de toda a infraestrutura cadastrada." TextColor="White" FontSize="13"/>
+                    <Button x:Name="BtnExportarPdf" 
+                            Text="Exportar Relatório (PDF)" 
+                            Clicked="OnExportarPdfClicked" 
+                            BackgroundColor="{StaticResource Primaria}" 
+                            TextColor="White" 
+                            HeightRequest="45"
+                            Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>
